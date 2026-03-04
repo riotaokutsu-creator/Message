@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Special Girl</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Font Classes */
+        .font-lovable {
+            font-family: 'Great Vibes', cursive;
+        }
+        .font-body {
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        /* Background Animation */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .heart-bg {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.4);
+            animation: float 15s infinite linear;
+            bottom: -20px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Text Reveal Animation */
+        .reveal-text {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Button Pulse */
+        @keyframes heartbeat {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 105, 180, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 105, 180, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 105, 180, 0); }
+        }
+        .btn-pulse {
+            animation: heartbeat 2s infinite;
+        }
+
+        /* Image Pop-up Animation */
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.5) translateY(100px);
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-300 via-pink-200 to-rose-300 min-h-screen overflow-x-hidden relative selection:bg-rose-400 selection:text-white">
+
+    <!-- Dynamic Background Hearts Container -->
+    <div id="bg-hearts" class="fixed inset-0 overflow-hidden pointer-events-none"></div>
+
+    <!-- Main Content Container -->
+    <main class="relative z-10 container mx-auto px-4 py-12 min-h-screen flex flex-col items-center justify-center">
+        
+        <!-- Card -->
+        <div class="glass rounded-3xl p-8 md:p-16 max-w-3xl w-full shadow-2xl text-center relative overflow-hidden border-t-4 border-white/50">
+            
+            <!-- Decorative Corner Flowers -->
+            <div class="absolute -top-10 -left-10 text-6xl opacity-20 rotate-45">🌸</div>
+            <div class="absolute -bottom-10 -right-10 text-6xl opacity-20 -rotate-45">🌸</div>
+
+            <!-- Header -->
+            <h1 class="font-lovable text-6xl md:text-8xl text-rose-600 mb-8 drop-shadow-sm reveal-text">
+                To My Love
+            </h1>
+
+            <!-- Long Message -->
+            <div class="space-y-6 text-rose-800 font-body text-lg md:text-xl leading-relaxed mb-12">
+                <p class="reveal-text" style="transition-delay: 200ms;">
+                    My dearest, every moment with you feels like a beautiful dream I never want to wake up from. 
+                    You bring colors to my black and white world and music to my silent days.
+                </p>
+                <p class="reveal-text" style="transition-delay: 400ms;">
+                    Your smile is the first thing I think of in the morning and the last thing on my mind at night. 
+                    I am so incredibly lucky to have you by my side, sharing laughter, tears, and every little adventure in between.
+                </p>
+                <p class="reveal-text" style="transition-delay: 600ms;">
+                    Thank you for being you—kind, brilliant, and absolutely stunning. 
+                    I cherish every second we spend together and look forward to a future filled with more memories.
+                </p>
+                <p class="font-lovable text-3xl text-rose-500 mt-4 reveal-text" style="transition-delay: 800ms;">
+                    You are my everything. ❤️
+                </p>
+            </div>
+
+            <!-- Thank You Button -->
+            <div class="reveal-text" style="transition-delay: 1000ms;">
+                <button id="thankYouBtn" class="btn-pulse bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-body font-bold py-4 px-10 rounded-full text-xl shadow-lg transform transition hover:scale-105 focus:outline-none ring-4 ring-rose-200">
+                    Click for a Surprise 🎁
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Image Modal Overlay -->
+    <div id="imageModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div id="modalContent" class="bg-white rounded-2xl p-2 max-w-lg w-full shadow-2xl transform transition-all relative">
+            <button id="closeModal" class="absolute -top-4 -right-4 bg-white text-rose-500 rounded-full p-2 shadow-lg hover:bg-rose-50 transition z-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="overflow-hidden rounded-xl relative">
+                <!-- Placeholder Image -->
+                <img src="https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                     alt="Romantic Flowers" 
+                     class="w-full h-auto object-cover transform hover:scale-110 transition duration-700">
+                
+                <!-- Overlay Text on Image -->
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-rose-900/80 to-transparent p-6 text-center">
+                    <p class="font-lovable text-3xl text-white">Forever Yours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Reveal Text Animation on Load
+            const revealElements = document.querySelectorAll('.reveal-text');
+            revealElements.forEach(el => {
+                // Trigger reflow
+                void el.offsetWidth; 
+                el.classList.add('visible');
+            });
+
+            // 2. Generate Background Floating Hearts
+            const bgContainer = document.getElementById('bg-hearts');
+            const heartSymbols = ['❤️', '💖', '💕', '🌸', '✨'];
+            
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.classList.add('heart-bg');
+                heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                
+                // Randomize properties
+                const size = Math.random() * 2 + 1; // 1rem to 3rem
+                const left = Math.random() * 100; // 0% to 100%
+                const duration = Math.random() * 10 + 10; // 10s to 20s
+                const delay = Math.random() * 5;
+
+                heart.style.fontSize = `${size}rem`;
+                heart.style.left = `${left}%`;
+                heart.style.animationDuration = `${duration}s`;
+                heart.style.animationDelay = `-${delay}s`; // Negative delay to start immediately at random positions
+
+                bgContainer.appendChild(heart);
+
+                // Cleanup
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+
+            // Create initial batch
+            for(let i=0; i<15; i++) createHeart();
+            // Continue creating
+            setInterval(createHeart, 1000);
+
+
+            // 3. Modal Logic
+            const btn = document.getElementById('thankYouBtn');
+            const modal = document.getElementById('imageModal');
+            const modalContent = document.getElementById('modalContent');
+            const closeModal = document.getElementById('closeModal');
+
+            function openModal() {
+                modal.classList.remove('hidden');
+                // Trigger animation
+                requestAnimationFrame(() => {
+                    modalContent.classList.add('modal-enter-active');
+                    modalContent.classList.remove('modal-enter');
+                });
+                triggerConfetti();
+            }
+
+            function hideModal() {
+                modalContent.classList.remove('modal-enter-active');
+                modalContent.classList.add('modal-enter');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+
+            btn.addEventListener('click', openModal);
+            closeModal.addEventListener('click', hideModal);
+            
+            // Close on click outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) hideModal();
+            });
+
+
+            // 4. Confetti Effect
+            function triggerConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffc0cb'];
+                
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    
+                    // Random properties
+                    const bg = colors[Math.floor(Math.random() * colors.length)];
+                    const left = Math.random() * 100 + 'vw';
+                    const animDuration = Math.random() * 3 + 2 + 's'; // 2-5s
+                    const size = Math.random() * 10 + 5 + 'px';
+                    
+                    confetti.style.backgroundColor = bg;
+                    confetti.style.left = left;
+                    confetti.style.top = '-10px';
+                    confetti.style.width = size;
+                    confetti.style.height = size;
+                    confetti.style.animationDuration = animDuration;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
